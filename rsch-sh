@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+INIT_SCHEDULER_FILE_PATH=/mnt/db/Data/prog/configs/init/scripts/init_scheduler
+DIR="$HOME/.config/bspwm"
+STYLE="emo"
+RASI="$DIR/themes/$STYLE/rofi/esch.rasi"
+
+
+options=("Aceitar Task")
+
+add_sleep_option() {
+	if [ "$2" -gt "1" ]; then
+		options+=("Adiar task em $2 minutos")
+	elif [ "$2" -eq "1" ]; then
+		options+=("Adiar task em $2 minuto")
+	fi
+}
+execute_task() {
+	if [[ "$1" -gt 0 ]]; then
+		sleep "$(echo "$2 * 60" | bc)";
+	fi
+	
+	echo "${@:2}" | sh	
+}
+rofi_cmd() {
+	selected=$(printf '%s\n' "${options[@]}" | rofi -dmenu \
+		-mesg "test" \
+		-markup-rows \
+		-p "$1" \
+		-theme "$RASI" \
+		-no-click-to-exit &
+	)
+}
+avaliate_and_execute() {
+	if [ -z "selected" ]; the
+		main "$@"
+	elif [[ "$selected" == "${options[0]}" ]]; then
+		execute_task 0 "${@:3}"
+	elif [[ "$selected" == "${options[1]}" ]]; then
+		sleep "$(echo "$2 * 60" | bc)";
+
+		main "$@"
+	fi
+}
+main() {
+	if 
+	avaliate_and_execute 
+}
+case $1 in
+	"execute")
+		main "${@:2}"
+		;;
+	"create")
+		echo "echo \"export DISPLAY=:0 && rsch execute ${@:3}\" | at $2" \
+			>> "$INIT_SCHEDULER_FILE_PATH"
+		;;
+	*)
+		help
+		;;
+esac
